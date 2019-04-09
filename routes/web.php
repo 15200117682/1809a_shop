@@ -20,4 +20,4 @@ Route::get("/info",function (){
 
 //接受微信的时间驱动
 Route::get("/wechat/getWechat","WeChat\WeChatController@getWechat");
-Route::get("/wechat/WXEvent","WeChat\WeChatController@WXEvent");
+Route::post("/wechat/WXEvent","WeChat\WeChatController@WXEvent");
