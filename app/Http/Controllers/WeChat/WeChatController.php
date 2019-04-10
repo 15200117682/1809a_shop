@@ -14,11 +14,14 @@ class WeChatController extends Controller
         echo $_GET['echostr'];
     }
 
-    //post接入微信
+    //post接入微
     public function WXEvent(){
         $data = file_get_contents("php://input");//通过流的方式接受post数据
         $time = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";
         file_put_contents("logs/wx_event.log",$time,FILE_APPEND);
+
+        $obj=simplexml_load_string($data);
+        var_dump($obj);
         echo "SUCCESS";
    }
 
@@ -34,5 +37,10 @@ class WeChatController extends Controller
             Redis::setTimeout($this->redis_weixin_access_token,3600);
         }
         return $token;
+    }
+
+    //获取用户信息
+    public function openid(){
+
     }
 }
