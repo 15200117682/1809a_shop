@@ -123,6 +123,11 @@ class WeChatController extends Controller
             "name": "发送位置", 
             "type": "location_select", 
             "key": "rselfmenu_2_0"
+        },
+        {
+           "type": "media_id", 
+           "name": "图片", 
+           "media_id": "MEDIA_ID1"
         }
     ]
 }';
