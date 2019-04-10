@@ -22,3 +22,4 @@ Route::get("/info",function (){
 Route::get("/wechat/getWechat","WeChat\WeChatController@getWechat");//首次接入微信
 Route::post("/wechat/getWechat","WeChat\WeChatController@WXEvent");//post接入微信
 Route::any("/wechat/getAccessToken","WeChat\WeChatController@getAccessToken");//获取access_token
+Route::any("/wechat/userInfo","WeChat\WeChatController@userInfo");//获取用户详细信息
