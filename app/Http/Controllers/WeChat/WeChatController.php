@@ -19,8 +19,9 @@ class WeChatController extends Controller
         $data = file_get_contents("php://input");//通过流的方式接受post数据
         $time = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";
         file_put_contents("logs/wx_event.log",$time,FILE_APPEND);
-
+        echo "SUCCESS";exit;
         $obj=simplexml_load_string($data);
+
         var_dump($obj);
         echo "SUCCESS";
    }
