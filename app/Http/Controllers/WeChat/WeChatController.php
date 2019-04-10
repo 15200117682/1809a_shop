@@ -36,7 +36,7 @@ class WeChatController extends Controller
                               <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                               <CreateTime>time()</CreateTime>
                               <MsgType><![CDATA[text]]></MsgType>
-                              <Content><![CDATA[你好,欢迎".$userInfo['nickname']."回来]]></Content>
+                              <Content><![CDATA[你好,欢迎".$userInfo['nickname']."回归]]></Content>
                             </xml>";
                     echo $xml;
                 }else{
