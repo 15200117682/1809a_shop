@@ -99,61 +99,76 @@ class WeChatController extends Controller
     public function customize(){
 
         $access=$this->getAccessToken();
-        $url=" https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";
+        $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";
         $data = '{
-            "button":[
-     {
-         "type":"click",
-          "name":"今日歌曲",
-          "key":"V1001_TODAY_MUSIC"
-      },
-      {
-          "name":"菜单",
-           "sub_button":[
-           {
-               "type":"view",
-               "name":"搜索",
-               "url":"http://www.soso.com/"
-            },
-            {
-                "type":"click",
-               "name":"赞一下我们",
-               "key":"V1001_GOOD"
-            }]
-       }]
- }';
+    "button": [
+        {
+            "name": "扫码", 
+            "sub_button": [
+                {
+                    "type": "scancode_waitmsg", 
+                    "name": "扫码带提示", 
+                    "key": "rselfmenu_0_0", 
+                    "sub_button": [ ]
+                }, 
+                {
+                    "type": "scancode_push", 
+                    "name": "扫码推事件", 
+                    "key": "rselfmenu_0_1", 
+                    "sub_button": [ ]
+                }
+            ]
+        }, 
+        {
+            "name": "发图", 
+            "sub_button": [
+                {
+                    "type": "pic_sysphoto", 
+                    "name": "系统拍照发图", 
+                    "key": "rselfmenu_1_0", 
+                   "sub_button": [ ]
+                 }, 
+                {
+                    "type": "pic_photo_or_album", 
+                    "name": "拍照或者相册发图", 
+                    "key": "rselfmenu_1_1", 
+                    "sub_button": [ ]
+                }, 
+                {
+                    "type": "pic_weixin", 
+                    "name": "微信相册发图", 
+                    "key": "rselfmenu_1_2", 
+                    "sub_button": [ ]
+                }
+            ]
+        }, 
+        {
+            "name": "发送位置", 
+            "type": "location_select", 
+            "key": "rselfmenu_2_0"
+        },
+        {
+           "type": "media_id", 
+           "name": "图片", 
+           "media_id": "MEDIA_ID1"
+        }, 
+        {
+           "type": "view_limited", 
+           "name": "图文消息", 
+           "media_id": "MEDIA_ID2"
+        }
+    ]
+}';
 
-//        $data = json_decode($data,true);
+
         $json = $this->curlRequest($url,$data);
         echo $json;
     }
 
 
-    public function getPost($url,$vars){
 
-        $ch = curl_init();
-        $params[CURLOPT_URL] = $url;    //请求url地址
-        $params[CURLOPT_HEADER] = false; //是否返回响应头信息
-        $params[CURLOPT_RETURNTRANSFER] = true; //是否将结果返回
-        $params[CURLOPT_FOLLOWLOCATION] = true; //是否重定向
-        $params[CURLOPT_USERAGENT] = 'Mozilla/5.0 (Windows NT 5.1; rv:9.0.1) Gecko/20100101 Firefox/9.0.1';
-
-        $postfields = '';
-        foreach ($vars as $key => $value){
-            $postfields .= urlencode($key) . '=' . urlencode($value) . '&';
-        }
-        $params[CURLOPT_POST] = true;
-        $params[CURLOPT_POSTFIELDS] = $postfields;
-
-        //解决方案一 禁用证书验证
-        $params[CURLOPT_SSL_VERIFYPEER] = false;
-        $params[CURLOPT_SSL_VERIFYHOST] = false;
-
-        curl_setopt_array($ch, $params); //传入curl参数
-        return  curl_exec($ch); //执行
-    }
-
-    public function curlRequest($url,$data = ''){
+//发送post请求，创建菜单
+    function curlRequest($url,$data = ''){
         $ch = curl_init();
         $params[CURLOPT_URL] = $url;    //请求url地址
         $params[CURLOPT_HEADER] = false; //是否返回响应头信息
