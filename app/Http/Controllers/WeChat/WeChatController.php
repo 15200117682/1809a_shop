@@ -65,7 +65,7 @@ class WeChatController extends Controller
                 }
             }
         }
-        
+
    }
 
    //获取access_token
