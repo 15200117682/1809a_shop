@@ -65,9 +65,7 @@ class WeChatController extends Controller
                 }
             }
         }
-
-        var_dump($obj);
-        echo "SUCCESS";
+        
    }
 
    //获取access_token
@@ -88,6 +86,7 @@ class WeChatController extends Controller
         }
         return $token;
     }
+
 
     //获取用户信息
     public function userInfo($openid){
