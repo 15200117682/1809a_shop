@@ -17,29 +17,30 @@ class WeChatController extends Controller
     //post接入微
     public function WXEvent(){
         $data = file_get_contents("php://input");//通过流的方式接受post数据
-        $time = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";
-        file_put_contents("logs/wx_event.log",$time,FILE_APPEND);
-        $obj=simplexml_load_string($data);
-        $ToUserName=$obj->ToUserName;
-        $FromUserName=$obj->FromUserName;
-        $CreateTime=$obj->CreateTime;
-        $MsgType=$obj->MsgType;
-        $Event=$obj->Event;
-        if($MsgType=="event"){
-            if($Event=="subscribe"){
+        $time = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";//存入时间
+        file_put_contents("logs/wx_event.log",$time,FILE_APPEND);//存到public日志文件
+        $obj=simplexml_load_string($data);//将xml数据转换成对象格式的数据
+        $ToUserName=$obj->ToUserName;//获取开发者微信号
+        $FromUserName=$obj->FromUserName;//获取用户id（openid）
+        $CreateTime=$obj->CreateTime;//获取时间
+        $MsgType=$obj->MsgType;//获取数据类型
+        $Event=$obj->Event;//获取时间类型
+        if($MsgType=="event"){//判断数据类型
+            if($Event=="subscribe"){//判断事件类型
+
                 $userInfo=$this->userInfo($FromUserName);//获取用户昵称
 
                 $one=UserModel::where(['openid'=>$FromUserName])->first();//查询数据库
-                if($one){
+                if($one){//判断用户是否是第一次关注
                     $xml="<xml>
                               <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                               <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                               <CreateTime>time()</CreateTime>
                               <MsgType><![CDATA[text]]></MsgType>
                               <Content><![CDATA[你好,欢迎".$userInfo['nickname']."回归]]></Content>
-                            </xml>";
-                    echo $xml;
-                }else{
+                            </xml>";//设置发送的xml格式
+                    echo $xml;//返回结果
+                }else{//如果是第一次关注
                     $array=array(
                         "openid"=>$userInfo['openid'],
                         "nickname"=>$userInfo['nickname'],
@@ -49,17 +50,17 @@ class WeChatController extends Controller
                         "headimgurl"=>$userInfo['headimgurl'],
                         "subscribe_time"=>$userInfo['subscribe_time'],
                         "sex"=>$userInfo['sex'],
-                    );
-                    $res=UserModel::insertGetId($array);
-                    if($res){
+                    );//设置数组形式的数据类型
+                    $res=UserModel::insertGetId($array);//存入数据库
+                    if($res){//判断是否入库成功
                         $xml="<xml>
                               <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                               <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                               <CreateTime>time()</CreateTime>
                               <MsgType><![CDATA[text]]></MsgType>
                               <Content><![CDATA[你好,欢迎".$userInfo['nickname']."]]></Content>
-                            </xml>";
-                        echo $xml;
+                            </xml>";//设置xml格式的数据
+                        echo $xml;//返回结果
                     }
                 }
             }
@@ -72,13 +73,15 @@ class WeChatController extends Controller
    //获取access_token
     public function getAccessToken(){
         // 检测是否有缓存
-        $key = 'access_token';
-        $token = Redis::get($key);
+        $key = 'access_token';//设置缓存下表
+        $token = Redis::get($key);//查看缓存是否存在
         if($token){
+            //如果有的话直接返回缓存的access_token值
         }else{
-            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".env('WX_APPID')."&secret=".env('WX_APPSECRET');
-            $response = file_get_contents($url);
-            $arr = json_decode($response,true);
+            //没有调用接口获取access_token
+            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".env('WX_APPID')."&secret=".env('WX_APPSECRET');//调接口
+            $response = file_get_contents($url);//流接受token数据
+            $arr = json_decode($response,true);//转换为数组类型数据
             Redis::set($key,$arr['access_token']);// 存缓存
             Redis::expire($key,3600);// 缓存存储事件1小时
             $token = $arr['access_token'];
@@ -89,17 +92,17 @@ class WeChatController extends Controller
     //获取用户信息
     public function userInfo($openid){
 //        $openid="oA-ON5vYTG_YQT-omvb5dgawPFkc";
-        $access=$this->getAccessToken();
-        $url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=$access&openid=$openid&lang=zh_CN";
-        $count=file_get_contents($url);
-        $u=json_decode($count,true);
-        return $u;
+        $access=$this->getAccessToken();//获取access_token
+        $url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=$access&openid=$openid&lang=zh_CN";//调用接口
+        $count=file_get_contents($url);//流接受数据
+        $u=json_decode($count,true);//转换数据为数组类型
+        return $u;//返回数据
     }
 
     public function customize(){
 
-        $access=$this->getAccessToken();
-        $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";
+        $access=$this->getAccessToken();//获取access_token
+        $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";//调用接口
         $data = '{
     "button": [
         {
@@ -130,11 +133,11 @@ class WeChatController extends Controller
            "media_id": "MEDIA_ID1"
         }
     ]
-}';
+}';//设置自定义菜单参数
 
 
-        $json = $this->curlRequest($url,$data);
-        echo $json;
+        $json = $this->curlRequest($url,$data);//调用第三方post请求后生成自定义菜单
+        echo $json;//返回结果
     }
 
 
