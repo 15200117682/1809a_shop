@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redis;
 use App\Model\User\UserModel;
 
+use GuzzleHttp\Client;
+
+
 class WeChatController extends Controller
 {
     //首次接入微信
@@ -99,49 +102,46 @@ class WeChatController extends Controller
     }
 
     public function customize(){
-
         $access=$this->getAccessToken();//获取access_token
         $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";//调用接口
-        $data = '{
-    "button": [
-        {
-            "name": "扫码", 
-            "sub_button": [
-                {
-                    "type": "scancode_waitmsg", 
-                    "name": "扫码带提示", 
-                    "key": "rselfmenu_0_0", 
-                    "sub_button": [ ]
-                }, 
-                {
-                    "type": "scancode_push", 
-                    "name": "扫码推事件", 
-                    "key": "rselfmenu_0_1", 
-                    "sub_button": [ ]
-                }
+        $data = [
+        'button'=> [
+            [
+                'type'=>'click',
+                'name'=>'缘分',
+                'key'=>'name_yuan'
+            ],
+            [
+                'name'=>'菜单',
+                'sub_button'=>[
+                    [
+                        'type'=>'click',
+                        'name'=>'最差缘分',
+                        'key'=>'view_yuan'
+                    ],
+                    [
+                        'type'=>'view',
+                        'name'=>'最美相遇',
+                        'url'=>'http://www.soso.com/'
+                    ]
+                ]
             ]
-        }, 
-        {
-            "name": "发送位置", 
-            "type": "location_select", 
-            "key": "rselfmenu_2_0"
-        },
-        {
-           "type": "media_id", 
-           "name": "图片", 
-           "media_id": "MEDIA_ID1"
-        }
-    ]
-}';//设置自定义菜单参数
-
-
-        $json = $this->curlRequest($url,$data);//调用第三方post请求后生成自定义菜单
-        echo $json;//返回结果
+            ]
+        ];//设置自定义菜单参数
+        $data=json_encode($data,JSON_UNESCAPED_UNICODE);
+        $Clinet=new Client();
+        $response=$Clinet->request("POST",$url,[
+                'body'=>$data
+            ]);
+        $res=$response->getBody();
+        echo $res;
+        //$json = $this->curlRequest($url,$data);//调用第三方post请求后生成自定义菜单
+        //echo $json;//返回结果
     }
 
 
 
-//发送post请求，创建菜单
+    //发送post请求，创建菜单
     function curlRequest($url,$data = ''){
         $ch = curl_init();
         $params[CURLOPT_URL] = $url;    //请求url地址
