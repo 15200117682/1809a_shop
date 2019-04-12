@@ -66,16 +66,16 @@ class WeChatController extends Controller
                         echo $xml;//返回结果
                     }
                 }
-            }else if($Event == 'text'){
-                $xml = "<xml>
+            }
+        }else if($Event == 'text'){
+            $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                     <CreateTime>time()</CreateTime>
                     <MsgType><![CDATA[text]]></MsgType>
                     <Content><![CDATA[已收到]]></Content>
                 </xml>";
-                echo $xml;
-            }
+            echo $xml;
         }
 
    }
