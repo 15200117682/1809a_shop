@@ -67,7 +67,7 @@ class WeChatController extends Controller
                     }
                 }
             }
-        }else if($Event == 'text'){
+        }else if($MsgType == 'text'){
             $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
