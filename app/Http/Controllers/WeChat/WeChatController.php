@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redis;
 use App\Model\User\UserModel;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Storage;
 
 
 class WeChatController extends Controller
@@ -76,6 +77,19 @@ class WeChatController extends Controller
                     <Content><![CDATA[我是傻子]]></Content>
                 </xml>";
             echo $xml;
+        }else if($MsgType=="image"){
+            $media_id=$obj->MediaId;//获取图片传输的间名意
+            $access=$this->getAccessToken();//获取access_token
+            $url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=$access&media_id=$media_id";//接口
+
+            $client=new Client();//实例化Guzzle
+            $response=$client->get($url);//调用方法
+            $headers=$response->getHeaders();//获取响应头
+            $file_info=$headers['Content-disposition'][0];//获取图片名
+            $file_name=rtrim(substr($file_info,-20),'"');//取文件名后20位
+            $img_name='weixin/img/'.substr(md5(time().mt_rand()),10,8).'_'.$file_name;//最后的文件名;
+            $res = Storage::put($img_name,$response->getBody());//使用Storage把图片存入laravel框架中
+            var_dump($res);
         }
 
    }
