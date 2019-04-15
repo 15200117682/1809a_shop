@@ -91,6 +91,14 @@ class WeChatController extends Controller
             $img_name='weixin/img/'.substr(md5(time().mt_rand()),10,8).'_'.$file_name;//最后的文件名;
             $res = Storage::put($img_name,$response->getBody());//使用Storage把图片存入laravel框架中
             var_dump($res);
+        }else if($MsgType=="voice"){
+            $media_id=$obj->MediaId;
+            $access=$this->getAccessToken();//获取access_token
+            $url="https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=$access&media_id=$media_id";
+            $mp3=file_get_contents($url);
+            $file_name=time().mt_rand(11111,99999).".amr";
+            $res=file_put_contents('weixin/voice/',$file_name,$mp3);
+            var_dump($res);
         }
 
    }
