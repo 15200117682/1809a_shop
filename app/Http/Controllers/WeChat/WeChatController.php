@@ -24,6 +24,7 @@ class WeChatController extends Controller
         $time = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";//存入时间
         file_put_contents("logs/wx_event.log",$time,FILE_APPEND);//存到public日志文件
         $obj=simplexml_load_string($data);//将xml数据转换成对象格式的数据
+//        dump($obj);exit;
         $ToUserName=$obj->ToUserName;//获取开发者微信号
         $FromUserName=$obj->FromUserName;//获取用户id（openid）
         $CreateTime=$obj->CreateTime;//获取时间
