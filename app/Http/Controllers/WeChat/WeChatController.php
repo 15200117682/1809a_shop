@@ -10,6 +10,8 @@ use App\Model\User\UserModel;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Storage;
 
+use App\Model\User\MaterialModel;
+
 
 class WeChatController extends Controller
 {
@@ -69,15 +71,25 @@ class WeChatController extends Controller
                     }
                 }
             }
-        }else if($MsgType == 'text'){
-            $xml = "<xml>
+        }else if($MsgType == 'text'){//用户回复文字消息
+            $Content=$obj->Content;//获取文字内容
+            $arr=[
+                "type"=>$CreateTime,
+                "FromUserName"=>$FromUserName,
+                "time"=>time()
+            ];//存成数组格式，等待入库
+            $res=MaterialModel::insert($arr);//存入数据库
+            if($res){//成功返回给用户结果
+                $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                     <CreateTime>time()</CreateTime>
                     <MsgType><![CDATA[text]]></MsgType>
                     <Content><![CDATA[已收到]]></Content>
-                </xml>";
-            echo $xml;
+                </xml>";//返回xml格式数据
+                echo $xml;//回复给用户
+            }
+
         }else if($MsgType=="image"){
             $media_id=$obj->MediaId;//获取图片传输的间名意
             $access=$this->getAccessToken();//获取access_token
