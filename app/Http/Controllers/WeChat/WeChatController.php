@@ -75,7 +75,7 @@ class WeChatController extends Controller
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                     <CreateTime>time()</CreateTime>
                     <MsgType><![CDATA[text]]></MsgType>
-                    <Content><![CDATA[我是傻子]]></Content>
+                    <Content><![CDATA[已收到]]></Content>
                 </xml>";
             echo $xml;
         }else if($MsgType=="image"){
@@ -97,7 +97,7 @@ class WeChatController extends Controller
             $url="https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=$access&media_id=$media_id";
             $mp3=file_get_contents($url);
             $file_name=time().mt_rand(11111,99999).".amr";
-            $res=file_put_contents('weixin/voice/',$file_name,$mp3);
+            $res=file_put_contents('weixin/voice/'.$file_name,$mp3);
             var_dump($res);
         }
 
