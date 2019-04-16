@@ -17,7 +17,7 @@ class WeChatController extends Controller
 {
     //首次接入微信
     public function getWechat(){
-        echo $_GET['echostr'];
+        echo $_GET['echostr'];//首次接入返回信息
     }
 
     //post接入微xin
@@ -27,7 +27,6 @@ class WeChatController extends Controller
         $time = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";//存入时间
         file_put_contents("logs/wx_event.log", $time, FILE_APPEND);//存到public日志文件
         $obj = simplexml_load_string($data);//将xml数据转换成对象格式的数据
-//        dump($obj);exit;
         $ToUserName = $obj->ToUserName;//获取开发者微信号
         $FromUserName = $obj->FromUserName;//获取用户id（openid）
         $CreateTime = $obj->CreateTime;//获取时间
@@ -50,14 +49,14 @@ class WeChatController extends Controller
                     echo $xml;//返回结果
                 } else {//如果是第一次关注
                     $array = array(
-                        "openid" => $userInfo['openid'],
-                        "nickname" => $userInfo['nickname'],
-                        "city" => $userInfo['city'],
-                        "province" => $userInfo['province'],
-                        "country" => $userInfo['country'],
-                        "headimgurl" => $userInfo['headimgurl'],
-                        "subscribe_time" => $userInfo['subscribe_time'],
-                        "sex" => $userInfo['sex'],
+                        "openid" => $userInfo['openid'],//用户id
+                        "nickname" => $userInfo['nickname'],//用户名称
+                        "city" => $userInfo['city'],//用户所在城市
+                        "province" => $userInfo['province'],//用户所在区
+                        "country" => $userInfo['country'],//用户所在国家
+                        "headimgurl" => $userInfo['headimgurl'],//用户头像
+                        "subscribe_time" => $userInfo['subscribe_time'],//用户时间
+                        "sex" => $userInfo['sex'],//用户性别
                     );//设置数组形式的数据类型
                     $res = UserModel::insertGetId($array);//存入数据库
                     if ($res) {//判断是否入库成功
@@ -79,9 +78,9 @@ class WeChatController extends Controller
                     $city=mb_substr($Content,0,2);//截取城市名称
                     $url="https://free-api.heweather.net/s6/weather/now?key=HE1904161039381186&location=$city";//调接口
                     $json=file_get_contents($url);//获取数据
-                    $arr=json_decode($json,true);
-                    $status=$arr['HeWeather6'][0]['status'];
-                    if($status=="ok"){
+                    $arr=json_decode($json,true);//变化数组形式数据
+                    $status=$arr['HeWeather6'][0]['status'];//判断城市是否正确的条件
+                    if($status=="ok"){//城市正确返回天气情况
                         $fl = $arr['HeWeather6'][0]['now']['fl'];//温度
                         $admin_area = $arr['HeWeather6'][0]['basic']['admin_area'];//城市
                         $wind_dir = $arr['HeWeather6'][0]['now']['wind_dir'];//风力
@@ -95,7 +94,7 @@ class WeChatController extends Controller
                     <Content><![CDATA[$str]]></Content>
                 </xml>";//返回xml格式数据
                         echo $xml;//回复给用户
-                    }else{
+                    }else{//城市错误提示
                         $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
@@ -107,11 +106,11 @@ class WeChatController extends Controller
                     }
 
 
-                }else {
+                }else {//消息入库
                     $arr = [
-                        "type" => $Content,
-                        "FromUserName" => $FromUserName,
-                        "time" => time()
+                        "type" => $Content,//用户发送的消息内容
+                        "FromUserName" => $FromUserName,//用户的id
+                        "time" => time()//入库的时间
                     ];//存成数组格式，等待入库
                     $res = MaterialModel::insert($arr);//存入数据库
                     if ($res) {//成功返回给用户结果
@@ -126,7 +125,7 @@ class WeChatController extends Controller
                     }
                 }
 
-        } else if ($MsgType == "image") {
+        } else if ($MsgType == "image") {//图片存项目，存库
             $media_id = $obj->MediaId;//获取图片传输的间名意
             $access = $this->getAccessToken();//获取access_token
             $url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=$access&media_id=$media_id";//接口
@@ -140,9 +139,9 @@ class WeChatController extends Controller
             $res = Storage::put($img_name, $response->getBody());//使用Storage把图片存入laravel框架中
             if ($res) {
                 $arr = [
-                    "type" => "storage/app/" . $file_name,
-                    "FromUserName" => $FromUserName,
-                    "time" => time()
+                    "type" => "storage/app/" . $file_name,//图片的路径
+                    "FromUserName" => $FromUserName,//用户的id
+                    "time" => time()//添加的时间
                 ];
                 $res = MaterialModel::insert($arr);//存入数据库
                 if ($res) {
@@ -157,17 +156,17 @@ class WeChatController extends Controller
                 }
             }
         } else if ($MsgType == "voice") {
-            $media_id = $obj->MediaId;
+            $media_id = $obj->MediaId;//语音的间名意
             $access = $this->getAccessToken();//获取access_token
-            $url = "https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=$access&media_id=$media_id";
-            $mp3 = file_get_contents($url);
-            $file_name = time() . mt_rand(11111, 99999) . ".amr";
-            $res = file_put_contents('weixin/voice/' . $file_name, $mp3);
+            $url = "https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=$access&media_id=$media_id";//调接口
+            $mp3 = file_get_contents($url);//存入
+            $file_name = time() . mt_rand(11111, 99999) . ".amr";//语音文件名
+            $res = file_put_contents('weixin/voice/' . $file_name, $mp3);//存入框架
             if ($res) {
                 $arr = [
-                    "type" => "public/weixin/voice" . $file_name,
-                    "FromUserName" => $FromUserName,
-                    "time" => time()
+                    "type" => "public/weixin/voice" . $file_name,//语音文件路径
+                    "FromUserName" => $FromUserName,//用户的id
+                    "time" => time()//添加的时间
                 ];
                 $res = MaterialModel::insert($arr);//存入数据库
                 if ($res) {
