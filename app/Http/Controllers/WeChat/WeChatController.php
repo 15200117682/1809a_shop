@@ -11,6 +11,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Storage;
 
 use App\Model\User\MaterialModel;
+use Monolog\Handler\SyslogUdp\UdpSocket;
 
 
 class WeChatController extends Controller
@@ -285,6 +286,11 @@ class WeChatController extends Controller
         ]);
         $res=$response->getBody();
         echo $res;
+    }
+
+    public function send(){
+        $data=UserModel::where(['status'=>1])->get()->toArray();
+        $openid=array_column($data,'openid');
     }
 
 
