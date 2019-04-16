@@ -74,17 +74,19 @@ class WeChatController extends Controller
             }
         } else if ($MsgType == 'text') {//用户回复文字消息
             $Content = $obj->Content;//获取文字内容
+
                 if(strpos($Content,"+天气")){//回复天气
                     $city=mb_substr($Content,0,2);//截取城市名称
                     $url="https://free-api.heweather.net/s6/weather/now?key=HE1904161039381186&location=$city";//调接口
                     $json=file_get_contents($url);//获取数据
                     $arr=json_decode($json,true);
-
+                    $status=$arr['HeWeather6'][0]['status'];
+                    if($status=="ok"){
                         $fl = $arr['HeWeather6'][0]['now']['fl'];//温度
                         $admin_area = $arr['HeWeather6'][0]['basic']['admin_area'];//城市
                         $wind_dir = $arr['HeWeather6'][0]['now']['wind_dir'];//风力
                         $cond_txt = $arr['HeWeather6'][0]['now']['cond_txt'];//天气情况
-                        $str = "温度：".$fl."<br>"."风力：".$wind_dir."所在城市:".$admin_area."天气实时情况:".$cond_txt;
+                        $str = "温度：".$fl."\n"."风力：".$wind_dir."\n"."所在城市:".$admin_area."\n"."天气实时情况:".$cond_txt;
                         $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
@@ -93,6 +95,23 @@ class WeChatController extends Controller
                     <Content><![CDATA[$str]]></Content>
                 </xml>";//返回xml格式数据
                         echo $xml;//回复给用户
+                    }else{
+                        $fl = $arr['HeWeather6'][0]['now']['fl'];//温度
+                        $admin_area = $arr['HeWeather6'][0]['basic']['admin_area'];//城市
+                        $wind_dir = $arr['HeWeather6'][0]['now']['wind_dir'];//风力
+                        $cond_txt = $arr['HeWeather6'][0]['now']['cond_txt'];//天气情况
+                        $str = "温度：".$fl."\n"."风力：".$wind_dir."\n"."所在城市:".$admin_area."\n"."天气实时情况:".$cond_txt;
+                        $xml = "<xml>
+                    <ToUserName><![CDATA[$FromUserName]]></ToUserName>
+                    <FromUserName><![CDATA[$ToUserName]]></FromUserName>
+                    <CreateTime>time()</CreateTime>
+                    <MsgType><![CDATA[text]]></MsgType>
+                    <Content><![CDATA[原谅不能为小主找到城市]]></Content>
+                </xml>";//返回xml格式数据
+                        echo $xml;//回复给用户
+                    }
+
+
                 }else {
                     $arr = [
                         "type" => $Content,
