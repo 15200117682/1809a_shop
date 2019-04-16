@@ -79,7 +79,6 @@ class WeChatController extends Controller
                     $url="https://free-api.heweather.net/s6/weather/now?key=HE1904161039381186&location=$city";//调接口
                     $json=file_get_contents($url);//获取数据
                     $arr=json_decode($json,true);
-                    print_r($arr);
                     if($arr['HeWeather6']['status']=="ok") {
                         $fl = $arr['HeWeather6'][0]['now']['fl'];//温度
                         $admin_area = $arr['HeWeather6'][0]['basic']['admin_area'];//城市
