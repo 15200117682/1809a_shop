@@ -57,6 +57,7 @@ class WeChatController extends Controller
                         "headimgurl" => $userInfo['headimgurl'],//用户头像
                         "subscribe_time" => $userInfo['subscribe_time'],//用户时间
                         "sex" => $userInfo['sex'],//用户性别
+                        "status"=>1
                     );//设置数组形式的数据类型
                     $res = UserModel::insertGetId($array);//存入数据库
                     if ($res) {//判断是否入库成功
@@ -70,6 +71,12 @@ class WeChatController extends Controller
                         echo $xml;//返回结果
                     }
                 }
+            }else if($Event=="unsubscribe"){//用户取消关注删除库
+                $userInfo = $this->userInfo($FromUserName);//获取用户昵称
+                $arr=[
+                    "status"=>0
+                ];//修改数据
+                UserModel::where(['openid' => $FromUserName])->update($arr);//执行sql
             }
         } else if ($MsgType == 'text') {//用户回复文字消息
             $Content = $obj->Content;//获取文字内容
@@ -213,6 +220,7 @@ class WeChatController extends Controller
         return $u;//返回数据
     }
 
+    //自定义菜单
     public function customize(){
         $access=$this->getAccessToken();//获取access_token
         $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";//调用接口
@@ -250,6 +258,28 @@ class WeChatController extends Controller
         //$json = $this->curlRequest($url,$data);//调用第三方post请求后生成自定义菜单
         //echo $json;//返回结果
     }
+
+    //群发消息
+    public function sendMsg($openid_arr,$content){
+        $access=$this->getAccessToken();//获取access_token
+        $msg=[
+            "touser"=>$openid_arr,
+            "msgtype"=>"text",
+            "text"=>[
+                "content"=>$content
+            ]
+        ];//群发的内容
+        $data=json_encode($msg,JSON_UNESCAPED_UNICODE);//转换json格式
+
+        $url="https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=$access";//调接口
+        $client=new Client();
+        $response=$client->request("POST",$url,[
+            'body'=>$data
+        ]);
+        $res=$response->getBody();
+        echo $res;
+    }
+
 
 
     //发送post请求，创建菜单
