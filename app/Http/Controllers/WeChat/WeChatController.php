@@ -96,11 +96,6 @@ class WeChatController extends Controller
                 </xml>";//返回xml格式数据
                         echo $xml;//回复给用户
                     }else{
-                        $fl = $arr['HeWeather6'][0]['now']['fl'];//温度
-                        $admin_area = $arr['HeWeather6'][0]['basic']['admin_area'];//城市
-                        $wind_dir = $arr['HeWeather6'][0]['now']['wind_dir'];//风力
-                        $cond_txt = $arr['HeWeather6'][0]['now']['cond_txt'];//天气情况
-                        $str = "温度：".$fl."\n"."风力：".$wind_dir."\n"."所在城市:".$admin_area."\n"."天气实时情况:".$cond_txt;
                         $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
