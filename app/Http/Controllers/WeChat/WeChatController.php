@@ -20,66 +20,67 @@ class WeChatController extends Controller
         echo $_GET['echostr'];
     }
 
-    //post接入微
-    public function WXEvent(){
+    //post接入微xin
+    public function WXEvent()
+    {
         $data = file_get_contents("php://input");//通过流的方式接受post数据
         $time = date('Y-m-d H:i:s') . "\n" . $data . "\n<<<<<<<";//存入时间
-        file_put_contents("logs/wx_event.log",$time,FILE_APPEND);//存到public日志文件
-        $obj=simplexml_load_string($data);//将xml数据转换成对象格式的数据
+        file_put_contents("logs/wx_event.log", $time, FILE_APPEND);//存到public日志文件
+        $obj = simplexml_load_string($data);//将xml数据转换成对象格式的数据
 //        dump($obj);exit;
-        $ToUserName=$obj->ToUserName;//获取开发者微信号
-        $FromUserName=$obj->FromUserName;//获取用户id（openid）
-        $CreateTime=$obj->CreateTime;//获取时间
-        $MsgType=$obj->MsgType;//获取数据类型
-        $Event=$obj->Event;//获取时间类型
-        if($MsgType=="event"){//判断数据类型
-            if($Event=="subscribe"){//判断事件类型
+        $ToUserName = $obj->ToUserName;//获取开发者微信号
+        $FromUserName = $obj->FromUserName;//获取用户id（openid）
+        $CreateTime = $obj->CreateTime;//获取时间
+        $MsgType = $obj->MsgType;//获取数据类型
+        $Event = $obj->Event;//获取时间类型
+        if ($MsgType == "event") {//判断数据类型
+            if ($Event == "subscribe") {//判断事件类型
 
-                $userInfo=$this->userInfo($FromUserName);//获取用户昵称
+                $userInfo = $this->userInfo($FromUserName);//获取用户昵称
 
-                $one=UserModel::where(['openid'=>$FromUserName])->first();//查询数据库
-                if($one){//判断用户是否是第一次关注
-                    $xml="<xml>
+                $one = UserModel::where(['openid' => $FromUserName])->first();//查询数据库
+                if ($one) {//判断用户是否是第一次关注
+                    $xml = "<xml>
                               <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                               <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                               <CreateTime>time()</CreateTime>
                               <MsgType><![CDATA[text]]></MsgType>
-                              <Content><![CDATA[你好,欢迎".$userInfo['nickname']."回归]]></Content>
+                              <Content><![CDATA[你好,欢迎" . $userInfo['nickname'] . "回归]]></Content>
                             </xml>";//设置发送的xml格式
                     echo $xml;//返回结果
-                }else{//如果是第一次关注
-                    $array=array(
-                        "openid"=>$userInfo['openid'],
-                        "nickname"=>$userInfo['nickname'],
-                        "city"=>$userInfo['city'],
-                        "province"=>$userInfo['province'],
-                        "country"=>$userInfo['country'],
-                        "headimgurl"=>$userInfo['headimgurl'],
-                        "subscribe_time"=>$userInfo['subscribe_time'],
-                        "sex"=>$userInfo['sex'],
+                } else {//如果是第一次关注
+                    $array = array(
+                        "openid" => $userInfo['openid'],
+                        "nickname" => $userInfo['nickname'],
+                        "city" => $userInfo['city'],
+                        "province" => $userInfo['province'],
+                        "country" => $userInfo['country'],
+                        "headimgurl" => $userInfo['headimgurl'],
+                        "subscribe_time" => $userInfo['subscribe_time'],
+                        "sex" => $userInfo['sex'],
                     );//设置数组形式的数据类型
-                    $res=UserModel::insertGetId($array);//存入数据库
-                    if($res){//判断是否入库成功
-                        $xml="<xml>
+                    $res = UserModel::insertGetId($array);//存入数据库
+                    if ($res) {//判断是否入库成功
+                        $xml = "<xml>
                               <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                               <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                               <CreateTime>time()</CreateTime>
                               <MsgType><![CDATA[text]]></MsgType>
-                              <Content><![CDATA[你好,欢迎".$userInfo['nickname']."]]></Content>
+                              <Content><![CDATA[你好,欢迎" . $userInfo['nickname'] . "]]></Content>
                             </xml>";//设置xml格式的数据
                         echo $xml;//返回结果
                     }
                 }
             }
-        }else if($MsgType == 'text'){//用户回复文字消息
-            $Content=$obj->Content;//获取文字内容
-            $arr=[
-                "type"=>$Content,
-                "FromUserName"=>$FromUserName,
-                "time"=>time()
+        } else if ($MsgType == 'text') {//用户回复文字消息
+            $Content = $obj->Content;//获取文字内容
+            $arr = [
+                "type" => $Content,
+                "FromUserName" => $FromUserName,
+                "time" => time()
             ];//存成数组格式，等待入库
-            $res=MaterialModel::insert($arr);//存入数据库
-            if($res){//成功返回给用户结果
+            $res = MaterialModel::insert($arr);//存入数据库
+            if ($res) {//成功返回给用户结果
                 $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
@@ -90,26 +91,26 @@ class WeChatController extends Controller
                 echo $xml;//回复给用户
             }
 
-        }else if($MsgType=="image"){
-            $media_id=$obj->MediaId;//获取图片传输的间名意
-            $access=$this->getAccessToken();//获取access_token
-            $url="https://api.weixin.qq.com/cgi-bin/media/get?access_token=$access&media_id=$media_id";//接口
+        } else if ($MsgType == "image") {
+            $media_id = $obj->MediaId;//获取图片传输的间名意
+            $access = $this->getAccessToken();//获取access_token
+            $url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=$access&media_id=$media_id";//接口
 
-            $client=new Client();//实例化Guzzle
-            $response=$client->get($url);//调用方法
-            $headers=$response->getHeaders();//获取响应头
-            $file_info=$headers['Content-disposition'][0];//获取图片名
-            $file_name=rtrim(substr($file_info,-20),'"');//取文件名后20位
-            $img_name='weixin/img/'.substr(md5(time().mt_rand()),10,8).'_'.$file_name;//最后的文件名;
-            $res = Storage::put($img_name,$response->getBody());//使用Storage把图片存入laravel框架中
-            if($res) {
+            $client = new Client();//实例化Guzzle
+            $response = $client->get($url);//调用方法
+            $headers = $response->getHeaders();//获取响应头
+            $file_info = $headers['Content-disposition'][0];//获取图片名
+            $file_name = rtrim(substr($file_info, -20), '"');//取文件名后20位
+            $img_name = 'weixin/img/' . substr(md5(time() . mt_rand()), 10, 8) . '_' . $file_name;//最后的文件名;
+            $res = Storage::put($img_name, $response->getBody());//使用Storage把图片存入laravel框架中
+            if ($res) {
                 $arr = [
                     "type" => "storage/app/" . $file_name,
                     "FromUserName" => $FromUserName,
                     "time" => time()
                 ];
-                $res=MaterialModel::insert($arr);//存入数据库
-                if($res){
+                $res = MaterialModel::insert($arr);//存入数据库
+                if ($res) {
                     $xml = "<xml>
                     <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                     <FromUserName><![CDATA[$ToUserName]]></FromUserName>
@@ -120,17 +121,34 @@ class WeChatController extends Controller
                     echo $xml;//回复给用户
                 }
             }
-        }else if($MsgType=="voice"){
-            $media_id=$obj->MediaId;
-            $access=$this->getAccessToken();//获取access_token
-            $url="https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=$access&media_id=$media_id";
-            $mp3=file_get_contents($url);
-            $file_name=time().mt_rand(11111,99999).".amr";
-            $res=file_put_contents('weixin/voice/'.$file_name,$mp3);
-            var_dump($res);
-        }
+        } else if ($MsgType == "voice") {
+            $media_id = $obj->MediaId;
+            $access = $this->getAccessToken();//获取access_token
+            $url = "https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=$access&media_id=$media_id";
+            $mp3 = file_get_contents($url);
+            $file_name = time() . mt_rand(11111, 99999) . ".amr";
+            $res = file_put_contents('weixin/voice/' . $file_name, $mp3);
+            if ($res) {
+                $arr = [
+                    "type" => "public/weixin/voice" . $file_name,
+                    "FromUserName" => $FromUserName,
+                    "time" => time()
+                ];
+                $res = MaterialModel::insert($arr);//存入数据库
+                if ($res) {
+                    $xml = "<xml>
+                    <ToUserName><![CDATA[$FromUserName]]></ToUserName>
+                    <FromUserName><![CDATA[$ToUserName]]></FromUserName>
+                    <CreateTime>time()</CreateTime>
+                    <MsgType><![CDATA[text]]></MsgType>
+                    <Content><![CDATA[您的声音真好听]]></Content>
+                </xml>";//返回xml格式数据
+                    echo $xml;//回复给用户
+                }
+            }
 
-   }
+        }
+    }
 
    //获取access_token
     public function getAccessToken(){
