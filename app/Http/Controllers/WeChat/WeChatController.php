@@ -102,7 +102,24 @@ class WeChatController extends Controller
             $file_name=rtrim(substr($file_info,-20),'"');//取文件名后20位
             $img_name='weixin/img/'.substr(md5(time().mt_rand()),10,8).'_'.$file_name;//最后的文件名;
             $res = Storage::put($img_name,$response->getBody());//使用Storage把图片存入laravel框架中
-            var_dump($res);
+            if($res) {
+                $arr = [
+                    "type" => "storage/app/" . $file_name,
+                    "FromUserName" => $FromUserName,
+                    "time" => time()
+                ];
+                $res=MaterialModel::insert($arr);//存入数据库
+                if($res){
+                    $xml = "<xml>
+                    <ToUserName><![CDATA[$FromUserName]]></ToUserName>
+                    <FromUserName><![CDATA[$ToUserName]]></FromUserName>
+                    <CreateTime>time()</CreateTime>
+                    <MsgType><![CDATA[text]]></MsgType>
+                    <Content><![CDATA[图片很完美]]></Content>
+                </xml>";//返回xml格式数据
+                    echo $xml;//回复给用户
+                }
+            }
         }else if($MsgType=="voice"){
             $media_id=$obj->MediaId;
             $access=$this->getAccessToken();//获取access_token
