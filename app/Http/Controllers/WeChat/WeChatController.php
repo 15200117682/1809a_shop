@@ -39,14 +39,20 @@ class WeChatController extends Controller
 
                 $one = UserModel::where(['openid' => $FromUserName])->first();//查询数据库
                 if ($one) {//判断用户是否是第一次关注
-                    $xml = "<xml>
+                    $arr=[
+                        "status"=>1
+                    ];//修改数据
+                    $res=UserModel::where(['openid' => $FromUserName])->update($arr);//执行sql
+                    if($res){
+                        $xml = "<xml>
                               <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                               <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                               <CreateTime>time()</CreateTime>
                               <MsgType><![CDATA[text]]></MsgType>
                               <Content><![CDATA[你好,欢迎" . $userInfo['nickname'] . "回归]]></Content>
                             </xml>";//设置发送的xml格式
-                    echo $xml;//返回结果
+                        echo $xml;//返回结果
+                    }
                 } else {//如果是第一次关注
                     $array = array(
                         "openid" => $userInfo['openid'],//用户id
