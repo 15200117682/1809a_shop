@@ -83,6 +83,7 @@ class WeChatController extends Controller
                     "status"=>0
                 ];//修改数据
                 UserModel::where(['openid' => $FromUserName])->update($arr);//执行sql
+                echo "SUCCESS";
             }
         } else if ($MsgType == 'text') {//用户回复文字消息
             $Content = $obj->Content;//获取文字内容
