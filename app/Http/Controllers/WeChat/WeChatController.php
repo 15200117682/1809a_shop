@@ -74,7 +74,7 @@ class WeChatController extends Controller
         }else if($MsgType == 'text'){//用户回复文字消息
             $Content=$obj->Content;//获取文字内容
             $arr=[
-                "type"=>$CreateTime,
+                "type"=>$Content,
                 "FromUserName"=>$FromUserName,
                 "time"=>time()
             ];//存成数组格式，等待入库
