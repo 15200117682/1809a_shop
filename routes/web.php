@@ -24,4 +24,8 @@ Route::post("/wechat/getWechat","WeChat\WeChatController@WXEvent");//post接入�
 Route::any("/wechat/getAccessToken","WeChat\WeChatController@getAccessToken");//获取access_token
 Route::any("/wechat/userInfo","WeChat\WeChatController@userInfo");//获取用户详细信息
 Route::any("/wechat/customize","WeChat\WeChatController@customize");//自定义菜单
+
 Route::any("/wechat/send","WeChat\WeChatController@send");//用户群发消息
+
+
+Route::any("/wechat/pay","WxPay\WxPayController@WxPay");//用户群发消息
