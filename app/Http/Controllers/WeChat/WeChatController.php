@@ -292,7 +292,7 @@ class WeChatController extends Controller
         $data=UserModel::where(['status'=>1])->get()->toArray();
         $openid=array_column($data,'openid');
 
-        $content="ajsfkdl";
+        $content="全场的朋友，尖叫声儿";
         $res=$this->sendMsg($openid,$content);
         echo $res;
     }
