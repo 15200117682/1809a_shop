@@ -285,12 +285,16 @@ class WeChatController extends Controller
             'body'=>$data
         ]);
         $res=$response->getBody();
-        echo $res;
+        return $res;
     }
 
     public function send(){
         $data=UserModel::where(['status'=>1])->get()->toArray();
         $openid=array_column($data,'openid');
+
+        $content="ajsfkdl";
+        $res=$this->sendMsg($openid,$content);
+        echo $res;
     }
 
 
