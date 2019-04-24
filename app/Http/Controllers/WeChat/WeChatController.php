@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\WeChat;
 
+use App\Model\Goods\GoodsModel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redis;
@@ -121,6 +122,26 @@ class WeChatController extends Controller
                     }
 
 
+                }else if($Content=="最新商品"){
+                    $img="/image/商品.jpg";
+                    $Title_url="/wechat/Title_url";
+                      $xml='
+                                            <xml>
+                      <ToUserName><![CDATA['.$FromUserName.']]></ToUserName>
+                      <FromUserName><![CDATA['.$ToUserName.']]></FromUserName>
+                      <CreateTime>'.time().'</CreateTime>
+                      <MsgType><![CDATA[news]]></MsgType>
+                      <ArticleCount>1</ArticleCount>
+                      <Articles>
+                        <item>
+                          <Title><![CDATA[商品]]></Title>
+                          <Description><![CDATA[最新的商品]]></Description>
+                          <PicUrl><![CDATA['.$img.']]></PicUrl>
+                          <Url><![CDATA['.$Title_url.']]></Url>
+                        </item>
+                      </Articles>
+                    </xml>';
+                      echo $xml;
                 }else {//消息入库
                     $arr = [
                         "type" => $Content,//用户发送的消息内容
