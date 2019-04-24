@@ -124,7 +124,8 @@ class WeChatController extends Controller
 
                 }else if($Content=="最新商品"){
                     $current_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].'/wechat/imgwen';
-                    $img="$current_url/image/商品.jpg";
+                    $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+                    $img="$url/image/商品.jpg";
                       $xml='
                        <xml>
                       <ToUserName><![CDATA['.$FromUserName.']]></ToUserName>
