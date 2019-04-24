@@ -123,10 +123,10 @@ class WeChatController extends Controller
 
 
                 }else if($Content=="最新商品"){
-                    $img="/image/商品.jpg";
-                    $Title_url="/wechat/Title_url";
+                    $current_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].'/wechat/imgwen';
+                    $img="$current_url/image/商品.jpg";
                       $xml='
-                                            <xml>
+                       <xml>
                       <ToUserName><![CDATA['.$FromUserName.']]></ToUserName>
                       <FromUserName><![CDATA['.$ToUserName.']]></FromUserName>
                       <CreateTime>'.time().'</CreateTime>
@@ -134,10 +134,10 @@ class WeChatController extends Controller
                       <ArticleCount>1</ArticleCount>
                       <Articles>
                         <item>
-                          <Title><![CDATA[商品]]></Title>
-                          <Description><![CDATA[最新的商品]]></Description>
+                          <Title><![CDATA[商品中心]]></Title>
+                          <Description><![CDATA[这里有你需要的最全的新品，最实惠的价格，让您的购物更舒心]]></Description>
                           <PicUrl><![CDATA['.$img.']]></PicUrl>
-                          <Url><![CDATA['.$Title_url.']]></Url>
+                          <Url><![CDATA['.$current_url.']]></Url>
                         </item>
                       </Articles>
                     </xml>';
