@@ -31,3 +31,4 @@ Route::any("/wechat/imgwen","WeChat\ImgWenController@imgwen");//图文消息回�
 
 
 Route::any("/wechat/pay","WxPay\WxPayController@WxPay");//用户群发消息
+
