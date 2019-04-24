@@ -26,5 +26,12 @@
     </tr>
         @endforeach
 </table>
+
+<button id="btn">点击分享</button>
 </body>
 </html>
+<script src="/js/jquery/jquery-1.12.4.min.js"></script>
+<script src="http://res2.wx.qq.com/open/js/jweixin-1.4.0.js "></script>
+<script>
+
+</script>
