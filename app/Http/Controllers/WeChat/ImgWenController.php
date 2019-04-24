@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\WeChat;
 
+use App\Model\Goods\GoodsModel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class ImgWenController extends Controller
 {
+    //商品页
     public function imgwen(){
-        echo "看什么看，没商品";
+        $data=GoodsModel::get()->toArray();
+        return view("WxPay.goods",["data"=>$data]);
     }
 }
