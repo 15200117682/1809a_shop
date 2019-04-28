@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WeChat;
 
 use App\Model\Goods\GoodsModel;
+use App\Model\TmpUsersModel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redis;
@@ -87,11 +88,27 @@ class WeChatController extends Controller
                 UserModel::where(['openid' => $FromUserName])->update($arr);//执行sql
                 echo "SUCCESS";
             }else if($Event=="SCAN"){//扫描带参数的二维码
-                $title = "宝贝儿，欢迎啊";//图文主题
-                $titles="宝儿，你知道吗？臣妾一直在等你啊！！！";//图文详细描述
-                $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
-                $picurl = "$url/image/商品.jpg";//图文图片
-                $str = "<xml>
+
+                $userInfo = $this->userInfo($FromUserName);//获取用户昵称
+
+                $array = array(
+                    "openid" => $userInfo['openid'],//用户id
+                    "nickname" => $userInfo['nickname'],//用户名称
+                    "city" => $userInfo['city'],//用户所在城市
+                    "province" => $userInfo['province'],//用户所在区
+                    "country" => $userInfo['country'],//用户所在国家
+                    "headimgurl" => $userInfo['headimgurl'],//用户头像
+                    "subscribe_time" => $userInfo['subscribe_time'],//用户时间
+                    "sex" => $userInfo['sex'],//用户性别
+                    "status"=>1
+                );//设置数组形式的数据类型
+                $res=TmpUsersModel::insertGetId($array);
+                if($res){
+                    $title = "宝贝儿，欢迎啊";//图文主题
+                    $titles="宝儿，你知道吗？臣妾一直在等你啊！！！";//图文详细描述
+                    $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+                    $picurl = "$url/image/商品.jpg";//图文图片
+                    $str = "<xml>
                           <ToUserName><![CDATA[$FromUserName]]></ToUserName>
                           <FromUserName><![CDATA[$ToUserName]]></FromUserName>
                           <CreateTime>$CreateTime</CreateTime>
@@ -106,7 +123,10 @@ class WeChatController extends Controller
                             </item>
                           </Articles>
                         </xml>";
-                echo $str;
+                    echo $str;
+                }
+
+
             }
         } else if ($MsgType == 'text') {//用户回复文字消息
             $Content = $obj->Content;//获取文字内容
