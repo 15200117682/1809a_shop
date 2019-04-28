@@ -87,7 +87,26 @@ class WeChatController extends Controller
                 UserModel::where(['openid' => $FromUserName])->update($arr);//执行sql
                 echo "SUCCESS";
             }else if($Event=="SCAN"){//扫描带参数的二维码
-                echo 1;
+                $title = "宝贝儿，欢迎啊";//图文主题
+                $titles="宝儿，你知道吗？臣妾一直在等你啊！！！";//图文详细描述
+                $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+                $picurl = "$url/image/商品.jpg";//图文图片
+                $str = "<xml>
+                          <ToUserName><![CDATA[$FromUserName]]></ToUserName>
+                          <FromUserName><![CDATA[$ToUserName]]></FromUserName>
+                          <CreateTime>$CreateTime</CreateTime>
+                          <MsgType><![CDATA[news]]></MsgType>
+                          <ArticleCount>1</ArticleCount>
+                          <Articles>
+                            <item>
+                              <Title><![CDATA[$title]]></Title>
+                              <Description><![CDATA[$titles]]></Description>
+                              <PicUrl><![CDATA[$picurl]]></PicUrl>
+                              <Url><![CDATA[$url]]></Url>
+                            </item>
+                          </Articles>
+                        </xml>";
+                echo $str;
             }
         } else if ($MsgType == 'text') {//用户回复文字消息
             $Content = $obj->Content;//获取文字内容
