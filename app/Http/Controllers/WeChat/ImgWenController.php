@@ -44,7 +44,7 @@ class ImgWenController extends Controller
 
     //商品详情加二维码
     public function goodsDetail($id){
-        $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+        $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].'/goods/detail/$id';
         $data=GoodsModel::where(['goods_id'=>$id])->where(['is_up'=>1])->first();
         if($data==''){
             return "查无商品";
