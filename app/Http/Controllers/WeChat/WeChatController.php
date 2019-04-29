@@ -299,9 +299,9 @@ class WeChatController extends Controller
         $data = [
         'button'=> [
                 [
-                    'type'=>'click',
-                    'name'=>"最差缘分",
-                    'url'=>"key_one1"
+                    "type"=>"click",
+                    "name"=>"最差缘分",
+                    "key"=>"V1001_TODAY_MUSIC"
                 ],
                 [
                     'type'=>'view',
