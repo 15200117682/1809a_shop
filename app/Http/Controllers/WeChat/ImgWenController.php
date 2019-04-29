@@ -15,6 +15,7 @@ class ImgWenController extends Controller
         return view("WxPay.goods",["data"=>$data]);
     }
 
+    //带参数的二维码生成
     public function code(){
         $access=getAccessToken();
         $url="https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=$access";
@@ -39,5 +40,19 @@ class ImgWenController extends Controller
             $url="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=$ticket";
             header("Location: $url");
         }
+    }
+
+    //商品详情加二维码
+    public function goodsDetail($id){
+        $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+        $data=GoodsModel::where(['goods_id'=>$id])->where(['is_up'=>1])->first();
+        if($data==''){
+            return "查无商品";
+        }
+        $info=[
+            "url"=>$url,
+            "data"=>$data
+        ];
+        return view("goods.detail",$info);
     }
 }

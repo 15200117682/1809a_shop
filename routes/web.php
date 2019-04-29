@@ -30,6 +30,7 @@ Route::any("/wechat/send","WeChat\WeChatController@send");//用户群发消息
 Route::any("/wechat/imgwen","WeChat\ImgWenController@imgwen");//图文消息回复
 
 Route::any("/wechat/code","WeChat\ImgWenController@code");//创建二维码
+Route::get('/goods/detail/{goods_id?}', 'WeChat\ImgWenController@goodsDetail');      //商品详情加二维码
 
 
 Route::any("/wechat/pay","WxPay\WxPayController@WxPay");//用户群发消息
