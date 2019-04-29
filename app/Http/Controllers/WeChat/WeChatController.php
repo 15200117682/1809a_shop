@@ -295,14 +295,20 @@ class WeChatController extends Controller
     public function customize(){
         $access=$this->getAccessToken();//获取access_token
         $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";//调用接口
-        $url2 = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].'/goods/detail/2';
+        $url2 = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].'/wechat/code';
         $data = [
         'button'=> [
+                [
+                    'type'=>'click',
+                    'name'=>"最差不过缘分",
+                    'url'=>"key_one1"
+                ],
                 [
                     'type'=>'view',
                     'name'=>'最新福利',
                     'url'=>"$url2"
                 ],
+
             ]
         ];//设置自定义菜单参数
         $data=json_encode($data,JSON_UNESCAPED_UNICODE);
@@ -366,5 +372,11 @@ class WeChatController extends Controller
         $content = curl_exec($ch); //执行
         curl_close($ch); //关闭连接
         return $content;
+    }
+
+    //微信授权
+    public function code(){
+        $url='https://open.weixin.qq.com/connect/oauth2/authorize?appid='.env("WX_APPID").'&redirect_uri=urlEncode&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
+        var_dump($url);
     }
 }
