@@ -300,7 +300,7 @@ class WeChatController extends Controller
         'button'=> [
                 [
                     'type'=>'click',
-                    'name'=>"最差不过缘分",
+                    'name'=>"最差缘分",
                     'url'=>"key_one1"
                 ],
                 [
