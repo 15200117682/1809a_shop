@@ -295,28 +295,14 @@ class WeChatController extends Controller
     public function customize(){
         $access=$this->getAccessToken();//获取access_token
         $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access";//调用接口
+        $url2 = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].'/goods/detail/2';
         $data = [
         'button'=> [
-            [
-                'type'=>'click',
-                'name'=>'缘分',
-                'key'=>'name_yuan'
-            ],
-            [
-                'name'=>'菜单',
-                'sub_button'=>[
-                    [
-                        'type'=>'click',
-                        'name'=>'最差缘分',
-                        'key'=>'view_yuan'
-                    ],
-                    [
-                        'type'=>'view',
-                        'name'=>'最美相遇',
-                        'url'=>'http://www.soso.com/'
-                    ]
-                ]
-            ]
+                [
+                    'type'=>'view',
+                    'name'=>'最新福利',
+                    'url'=>"$url2"
+                ],
             ]
         ];//设置自定义菜单参数
         $data=json_encode($data,JSON_UNESCAPED_UNICODE);
